@@ -48,17 +48,20 @@ const drawer = ref(null);
             <v-list
                 :model-value="$route.path"
             >
-                <v-list-item
+                <router-link
+                    :to="item.path"
                     v-for="(item, index) in useAppStore().getMenuPoints"
-                    :value="item.path"
                     class="pa-6"
                 >
-                    <router-link :to="item.path">
+                    <v-list-item
+                        :value="item.path"
+                        class="pa-5"
+                    >
                         <v-list-item-title>
                             {{item.title}}
                         </v-list-item-title>
-                    </router-link>
-                </v-list-item>
+                    </v-list-item>
+                </router-link>
             </v-list>
         </v-navigation-drawer>
         <v-main>
