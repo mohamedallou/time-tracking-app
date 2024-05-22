@@ -11,12 +11,14 @@ In the backend folder run
 docker compose up -d
 ```
 ## Database
-
+The database credentials are in the ***.env** file
 In the backend folder, open the terminal and run:
 
 ```shell
  php bin/console doctrine:migrations:migrate 
 ```
+
+To populate the database with data run the sql file located under ***backend/resources/timelog.sql***
 
 ## Web Server
 We are using Symfony local web server for dev purposes. In the backend folder run:
