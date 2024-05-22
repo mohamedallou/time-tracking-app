@@ -20,14 +20,45 @@
                         </v-row>
                     </v-expansion-panel-title>
                     <v-expansion-panel-text>
-                        <v-text-field
-                            :label="'from'"
-                            v-model="timeLog.start"
-                            type="datetime-local"
-                        >
-                        </v-text-field>
-                        <v-text-field :label="'to'" v-model="timeLog.end" type="datetime-local">
-                        </v-text-field>
+<!--                        <v-text-field-->
+<!--                            :label="'from'"-->
+<!--                            v-model="timeLog.start"-->
+<!--                            type="datetime-local"-->
+<!--                        >-->
+<!--                        </v-text-field>-->
+<!--                        <v-text-field :label="'to'" v-model="timeLog.end" type="datetime-local">-->
+<!--                        </v-text-field>-->
+                        <v-row>
+                            <v-col cols="6">
+                                from
+                            </v-col>
+                            <v-col cols="6">
+                                to
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col cols="6">
+                                <VueDatePicker
+                                    v-model="timeLog.start"
+                                    :utc="true"
+                                    locale="de"
+                                    format="dd.MM.yyyy HH:mm"
+                                    cancelText="abbrechen"
+                                    selectText="auswählen"
+                                />
+                            </v-col>
+                            <v-col cols="6">
+                                <VueDatePicker
+                                    v-model="timeLog.end"
+                                    :utc="true"
+                                    locale="de"
+                                    format="dd.MM.yyyy HH:mm"
+                                    cancelText="abbrechen"
+                                    selectText="auswählen"
+                                />
+                            </v-col>
+                        </v-row>
+
                     </v-expansion-panel-text>
                 </v-expansion-panel>
             </v-expansion-panels>
@@ -44,17 +75,49 @@
             </v-row>
         </v-card-text>
     </v-card>
-    <v-dialog v-model="dialog">
-        <v-card title="Create">
+    <v-dialog v-model="dialog" >
+        <v-card title="Create" min-height="600">
             <v-card-text>
-                <v-text-field
-                    :label="'from'"
-                    v-model="newTimeLogStart"
-                    type="datetime-local"
-                >
-                </v-text-field>
-                <v-text-field :label="'to'" v-model="newTimeLogEnd" type="datetime-local">
-                </v-text-field>
+<!--                <v-text-field-->
+<!--                    :label="'from'"-->
+<!--                    v-model="newTimeLogStart"-->
+<!--                    type="datetime-local"-->
+<!--                >-->
+<!--                </v-text-field>-->
+                <v-row>
+                    <v-col cols="6">
+                        from
+                    </v-col>
+                    <v-col cols="6">
+                        to
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-col cols="6">
+                        <VueDatePicker
+                            v-model="newTimeLogStart"
+                            :utc="true"
+                            locale="de"
+                            format="dd.MM.yyyy HH:mm"
+                            cancelText="abbrechen"
+                            selectText="auswählen"
+                        />
+                    </v-col>
+                    <v-col cols="6">
+                        <VueDatePicker
+                            v-model="newTimeLogEnd"
+                            :utc="true"
+                            locale="de"
+                            format="dd.MM.yyyy HH:mm"
+                            cancelText="abbrechen"
+                            selectText="auswählen"
+                        />
+                    </v-col>
+                </v-row>
+
+
+<!--                <v-text-field :label="'to'" v-model="newTimeLogEnd" type="datetime-local">-->
+<!--                </v-text-field>-->
             </v-card-text>
 
             <v-card-actions>
@@ -78,9 +141,13 @@
 
 <script>
 import {useAppStore} from "@/stores/app.store.js";
+import VueDatePicker from "@vuepic/vue-datepicker";
 
 export default {
     name: "TimeLogOverview",
+    components: {
+        VueDatePicker
+    },
     data() {
         return {
             dialog: false,

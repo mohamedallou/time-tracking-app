@@ -25,19 +25,19 @@ class TimeLog
     #[Id, Column(name: 'id', type: 'integer'), GeneratedValue(strategy: 'IDENTITY')]
     private int $id;
 
-    #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i'])]
+    #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i \G\M\T'])]
     #[Column(type: Types::DATETIME_IMMUTABLE)]
     private DateTimeImmutable $created;
 
-    #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i'])]
+    #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i \G\M\T'])]
     #[Column(type: Types::DATETIME_IMMUTABLE)]
     private DateTimeImmutable $updated;
 
-    #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i'])]
+    #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i \G\M\T'])]
     #[Column(type: Types::DATETIME_IMMUTABLE)]
     private DateTimeImmutable $start;
 
-    #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i'])]
+    #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i \G\M\T'])]
     #[Column(name: '`end`', type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?DateTimeImmutable $end = null;
 
