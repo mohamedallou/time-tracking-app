@@ -132,6 +132,7 @@ readonly class TimeLogManager
         /** @var TimeLog[] $res */
         $logs = $this->findLogs($pageSize, $page, $from, $to);
         foreach ($logs as $log) {
+            // First we get the year of the current log
             $year = $log->getStart()->format('Y');
 
             if (!isset($years[$year])) {
@@ -148,17 +149,26 @@ readonly class TimeLogManager
 
             $week = 'week-' .  $log->getStart()->format('W');
             $day = $dayStart = $log->getStart()->format('Y-m-d');
-            $month = $log->getStart()->format('m');
+            $month = $log->getStart()->format('M');
 
             $dayEnd = $log->getEnd()->format('Y-m-d');
 
+            // This is the end of the interval or of the day if the interval is spread in 2 days.
             $dayEndRef = $log->getEnd();
 
+            // Check if the given time interval is included in only one day or not.
+            // If not then we need to split the interval in 2, and add the resulting periods to the corresponding days
             $endAndStartSameDay = $dayEnd === $dayStart;
             if (!$endAndStartSameDay) {
+                // We set a new interval end for the first part of the interval (first day)
                 $dayEndRef = new \DateTimeImmutable($day . ' 23:59');
+
+                // We set a new interval start for the second part of the interval
                 $customDayStartRef = new \DateTimeImmutable($dayEnd . ' 00:00');
 
+                // We find the date corresponding to the second part of the interval (the next day)
+                // We add up the calculated worked hours to their matching days
+                // weeks and months (possibly containing hours from other logs too).
                 $newWeekKey = $customDayStartRef->format('W');
                 $newDayKey = $customDayStartRef->format('Y-m-d');
                 $newMonthKey = $customDayStartRef->format('m');
@@ -172,11 +182,13 @@ readonly class TimeLogManager
 
             $diffInSeconds = $dayEndRef->getTimestamp() - $log->getStart()->getTimestamp();
 
-
+            // We add up the calculated worked hours to their matching days
+            // weeks and months (possibly containing hours from other logs too).
             $weeks[$week] = ($weeks[$week] ?? 0) + ($diffInSeconds / 3600);
             $days[$day] = ($days[$dayStart] ?? 0) + ($diffInSeconds / 3600);
             $months[$month] = ($months[$month] ?? 0) + ($diffInSeconds / 3600);
 
+            // We group the intervals per year, and each year has the worked hours, grouped per days, or weeks, or months
             $years[$year]['weeks'] = $weeks;
             $years[$year]['days'] = $days;
             $years[$year]['months'] = $months;
