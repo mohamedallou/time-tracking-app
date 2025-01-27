@@ -4,7 +4,13 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-
+    oauth.server_url: '%env(OAUTH_SERVER_BASE_URL)%'
+    oauth.realm: '%env(OAUTH_REALM)%'
+    oauth.token.issuer: '%env(OAUTH_TOKEN_ISSUER)%' # used for validation purposes
+    oauth.public_client_id: '%env(OAUTH_PUBLIC_CLIENT_ID)%'
+    oauth.secret_client_id: '%env(OAUTH_SECRET_CLIENT_ID)%'
+    oauth.secret: '%env(OAUTH_SECRET)%'
+    oauth.audience: '%env(OAUTH_AUDIENCE)%' # used for validation purposes
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -25,3 +31,27 @@ services:
     App\Controller\TimeLogController:
         arguments:
             $logger: '@monolog.logger.request'
+    App\Security\Factory\AccessTokenHandlerFactory:
+        arguments:
+            - '@service_container'
+    App\Security\Factory\PublicKeyProviderFactory: ~
+    App\Security\TokenConfig:
+        arguments:
+            $realm: '%oauth.realm%'
+            $issuer: '%oauth.token.issuer%'
+            $providerUrl: '%oauth.server_url%'
+            $publicClientId: '%oauth.public_client_id%'
+            $secretClientId: '%oauth.secret_client_id%'
+            $secret: '%oauth.secret%'
+            $audience: '%oauth.audience%'
+    App\Security\AccessTokenHandler:
+        factory: ['@App\Security\Factory\AccessTokenHandlerFactory', 'create']
+    App\Security\PublicKeyProvider:
+        factory: ['@App\Security\Factory\PublicKeyProviderFactory', 'create']
+        arguments:
+            - '%kernel.project_dir%'
+            - '@App\Security\TokenConfig'
+            - '%oauth.server_url%'
+    Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler:
+        arguments:
+            - '%env(DATABASE_URL)%'

@@ -1,5 +1,7 @@
+import {secureFetch} from "@/security/authentication.js";
+
 export async function fetchLogs(pageSize = 100, page = 1) {
-    const res =  await fetch(
+    const res =  await secureFetch(
         `/api/timelog/?page=${page}&pageSize=${pageSize}`
     );
 

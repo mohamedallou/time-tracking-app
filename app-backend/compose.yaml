@@ -1,6 +1,14 @@
 version: '3'
 name: 'sio-backend-time-tracking'
 services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.1.0
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    command: ["start-dev"]
+    ports:
+      - "8080:8080"
 ###> doctrine/doctrine-bundle ###
   database:
     image: postgres:${POSTGRES_VERSION:-16}-alpine

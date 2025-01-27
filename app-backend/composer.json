@@ -7,12 +7,16 @@
         "php": ">=8.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "auth0/auth0-php": "^8.13",
         "doctrine/dbal": "^3",
         "doctrine/doctrine-bundle": "^2.12",
         "doctrine/doctrine-migrations-bundle": "^3.3",
         "doctrine/orm": "^3.1",
+        "firebase/php-jwt": "^6.11",
+        "guzzlehttp/guzzle": "*",
+        "jumbojett/openid-connect-php": "^1.0",
         "league/csv": "^9.15",
-        "lexik/jwt-authentication-bundle": "^3.1",
+        "nyholm/psr7": "^1.8",
         "phpdocumentor/reflection-docblock": "^5.4",
         "phpstan/phpdoc-parser": "^1.29",
         "symfony/asset": "7.0.*",
@@ -87,7 +91,9 @@
         "post-update-cmd": [
             "@auto-scripts"
         ],
-        "test": "phpunit"
+        "test": "phpunit",
+        "migration-make": "php bin/console make:migration",
+        "migrate": "php bin/console doctrine:migration:migrate"
     },
     "conflict": {
         "symfony/symfony": "*"

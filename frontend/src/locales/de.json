@@ -1,0 +1,9 @@
+{
+  "message": {
+    "hello": "Hallo",
+    "time": "Zeit | Zeiten",
+    "login": "einloggen",
+    "logout": "ausloggen",
+    "notification": "Meldung"
+  }
+}

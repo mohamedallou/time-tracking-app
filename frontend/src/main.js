@@ -8,11 +8,11 @@ import { createPinia } from 'pinia'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
-import { createAuth0 } from '@auth0/auth0-vue';
 
-
+// local imports
 import App from './App.vue'
 import router from './router'
+import {i18n} from "@/i18n/index.js";
 
 const app = createApp(App)
 const vuetify = createVuetify({
@@ -20,19 +20,9 @@ const vuetify = createVuetify({
     directives,
 })
 
-const auth0 = createAuth0(
-    {
-        domain: "dev-q5q337ag5psljqaf.us.auth0.com",
-        clientId: "JRsKtH3qOiiAOPO3PAviVjvCkNDtDnfv",
-        authorizationParams: {
-            redirect_uri: window.location.origin
-        }
-    }
-);
-
 app.use(createPinia())
-app.use(router)
-app.use(vuetify);
-app.use(auth0);
+    .use(router)
+    .use(vuetify)
+    .use(i18n);
 
 app.mount('#app')
