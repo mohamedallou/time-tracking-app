@@ -27,4 +27,14 @@ readonly class TimeLogStoreDto
                 ->addViolation();
         }
     }
+
+    public function getStart(): \DateTimeImmutable
+    {
+        return $this->start;
+    }
+
+    public function getEnd(): ?\DateTimeImmutable
+    {
+        return $this->end;
+    }
 }

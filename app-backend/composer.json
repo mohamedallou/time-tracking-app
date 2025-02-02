@@ -31,6 +31,7 @@
         "symfony/http-client": "7.0.*",
         "symfony/intl": "7.0.*",
         "symfony/mailer": "7.0.*",
+        "symfony/messenger": "7.0.*",
         "symfony/mime": "7.0.*",
         "symfony/monolog-bundle": "^3.0",
         "symfony/notifier": "7.0.*",
@@ -49,7 +50,8 @@
         "symfony/web-link": "7.0.*",
         "symfony/yaml": "7.0.*",
         "twig/extra-bundle": "^2.12|^3.0",
-        "twig/twig": "^2.12|^3.0"
+        "twig/twig": "^2.12|^3.0",
+        "web-token/jwt-library": "^4.0"
     },
     "config": {
         "allow-plugins": {
@@ -93,7 +95,9 @@
         ],
         "test": "phpunit",
         "migration-make": "php bin/console make:migration",
-        "migrate": "php bin/console doctrine:migration:migrate"
+        "migrate": "php bin/console doctrine:migration:migrate",
+        "debug-container": "php bin/console debug:container",
+        "debug-container-autowirable": " php bin/console debug:autowiring --all"
     },
     "conflict": {
         "symfony/symfony": "*"

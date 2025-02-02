@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\TimeLog;
+use App\Entity\User;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityRepository;
 
@@ -90,5 +91,20 @@ class TimeLogRepository extends EntityRepository
         }
 
         return $qb->getQuery()->getSingleScalarResult();
+    }
+
+    public function findLastLogForUser(?User $user): ?TimeLog
+    {
+        $qb = $this->createQueryBuilder('t')
+            ->orderBy('t.id', 'desc')
+            ->setMaxResults(1);
+
+        if ($user !== null) {
+            $qb->andWhere('t.user = :user')
+                ->setParameter('user', $user);
+        }
+
+        return $qb->getQuery()
+        ->getOneOrNullResult();
     }
 }

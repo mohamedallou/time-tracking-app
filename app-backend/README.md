@@ -29,4 +29,3 @@ symfony server:start
 We set a constraint to limit the difference between start and end date in a log entry to less than 24 hours.
 This of course makes sense since it's not possible to work continuously for 24 hours, and it will simplify our log managements
 and the processing of the statistics
-

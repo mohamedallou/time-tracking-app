@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\PrePersist;
 use Doctrine\ORM\Mapping\PreUpdate;
 use Doctrine\ORM\Mapping\Table;
@@ -40,6 +41,12 @@ class TimeLog
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i \G\M\T'])]
     #[Column(name: '`end`', type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?DateTimeImmutable $end = null;
+
+    #[ManyToOne(targetEntity: User::class, inversedBy: 'timeLogs')]
+    private ?User $user;
+
+    #[Column(type: 'boolean', options: ['default' => 1])]
+    private bool $valid = true;
 
     /**
      * @return int
@@ -134,4 +141,23 @@ class TimeLog
         $this->updated = new DateTimeImmutable();
     }
 
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): void
+    {
+        $this->user = $user;
+    }
+
+    public function isValid(): bool
+    {
+        return $this->valid;
+    }
+
+    public function setValid(bool $valid): void
+    {
+        $this->valid = $valid;
+    }
 }

@@ -9,16 +9,26 @@ namespace App\Exception;
  * @author mohamed.allouche
  * Implements Problem Details for HTTP APIs RFC
  */
-class ProblemDetailsException
+abstract class ProblemDetailsException extends \Exception
 {
     public function __construct(
         private readonly string $type,
         private readonly string $detail,
         private readonly string $title,
-        private readonly string $status,
+        /**
+         * @var int $status
+         * The https status
+         */
+        private readonly int $status = 400,
+        private readonly bool $useMessageForUser = true,
     ) {
+        parent::__construct($detail, $status);
     }
 
+    /**
+     * Can also be used as key for the translation component
+     * @return string
+     */
     public function getType(): string
     {
         return $this->type;
@@ -34,8 +44,17 @@ class ProblemDetailsException
         return $this->title;
     }
 
-    public function getStatus(): string
+    /**
+     *
+     * @return string
+     */
+    public function getStatus(): int
     {
         return $this->status;
+    }
+
+    public function canUseMessageForUser(): bool
+    {
+        return $this->useMessageForUser;
     }
 }

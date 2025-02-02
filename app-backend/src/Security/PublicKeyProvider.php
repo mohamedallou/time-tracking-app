@@ -6,7 +6,7 @@ namespace App\Security;
 
 class PublicKeyProvider
 {
-    const PUBLIC_KEY_FILENAME = 'keycloak-public.pem';
+    const PUBLIC_KEY_FILENAME = 'public.pem';
 
     public function __construct(
         private readonly string $projectDir,

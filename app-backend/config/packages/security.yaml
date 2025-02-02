@@ -16,12 +16,18 @@ security:
         api:
             pattern: ^/api/
             provider: app_user_provider
+#            custom_authenticators:
+#                - 'App\Security\Authenticator\HybridAccessTokenAuthenticator'
             access_token:
-                #token_handler: App\Security\AccessTokenHandler
-                token_handler:
-                    oidc_user_info:
-                        base_uri: http://localhost:8080/realms/timetracking-org-1/protocol/openid-connect/userinfo
-                        claim: email
+                token_handler: App\Security\Token\AccessTokenHandler
+                token_extractors:
+                    - 'header'
+                    - 'request_body'
+                success_handler: 'App\Security\Authentication\AuthenticationSuccessHandler'
+#                token_handler:
+#                    oidc_user_info:
+#                        base_uri: http://localhost:8080/realms/timetracking-org-1/protocol/openid-connect/userinfo
+#                        claim: email
 
         main:
             lazy: true
@@ -37,7 +43,8 @@ security:
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
-        - { path: ^/api, roles: PUBLIC_ACCESS }
+        #- { path: ^/api, roles: PUBLIC_ACCESS }
+        #- { path: ^/api/login, roles: PUBLIC_ACCESS }
 
 when@test:
     security:

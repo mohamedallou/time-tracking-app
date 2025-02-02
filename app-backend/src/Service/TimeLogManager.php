@@ -25,7 +25,10 @@ readonly class TimeLogManager
         $repo = $this->manager->getRepository(TimeLog::class);
         $overlappingLog = $repo->findLogWithOverlappingInterval($dto->start, $dto->end);
         if ($overlappingLog !== null) {
-            throw new TimeLogOverlappingException(message: 'Overlapping log found');
+            throw new TimeLogOverlappingException(
+                detail: 'Overlapping log found',
+                title: 'Overlapping time log'
+            );
         }
 
         $timeLog = new TimeLog();
@@ -45,13 +48,16 @@ readonly class TimeLogManager
         $currLog = $repo->find($logId);
 
         if ($currLog === null) {
-            throw new TimeLogNotFoundException('Log not found');
+            throw new TimeLogNotFoundException('Requested log was not found', 'Log not found');
         }
 
         $overlappingLog = $repo->findLogWithOverlappingInterval($dto->start, $dto->end, $currLog);
 
         if ($overlappingLog !== null) {
-            throw new TimeLogOverlappingException(message: 'Overlapping log found');
+            throw new TimeLogOverlappingException(
+                'Overlapping time log found',
+                'Overlapping log found'
+            );
         }
 
         $timeLog = $currLog;
@@ -70,7 +76,7 @@ readonly class TimeLogManager
         $currLog = $repo->find($id);
 
         if ($currLog === null) {
-            throw new TimeLogNotFoundException('Log not found');
+            throw new TimeLogNotFoundException('Log not found', 'Log not found');
         }
 
         $this->manager->remove($currLog);
@@ -85,7 +91,7 @@ readonly class TimeLogManager
         $currLog = $repo->find($id);
 
         if ($currLog === null) {
-            throw new TimeLogNotFoundException('Log not found');
+            throw new TimeLogNotFoundException('Log not found', 'Log not found');
         }
 
         return $currLog;
@@ -215,7 +221,6 @@ readonly class TimeLogManager
         ?\DateTimeImmutable $to = null,
     ): string
     {
-
         $timeLogs = $this->findLogs($pageSize, $page, $from, $to);
 
         $header = ['Id', 'Start', 'End'];

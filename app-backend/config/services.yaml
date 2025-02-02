@@ -28,14 +28,18 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    token_config: '@App\Security\Token\TokenConfig'
+    public_key_provider: '@App\Security\PublicKeyProvider'
     App\Controller\TimeLogController:
         arguments:
             $logger: '@monolog.logger.request'
     App\Security\Factory\AccessTokenHandlerFactory:
         arguments:
-            - '@service_container'
+            - '@token_config'
+            - '@public_key_provider'
     App\Security\Factory\PublicKeyProviderFactory: ~
-    App\Security\TokenConfig:
+    App\Security\Token\TokenConfig:
         arguments:
             $realm: '%oauth.realm%'
             $issuer: '%oauth.token.issuer%'
@@ -44,13 +48,13 @@ services:
             $secretClientId: '%oauth.secret_client_id%'
             $secret: '%oauth.secret%'
             $audience: '%oauth.audience%'
-    App\Security\AccessTokenHandler:
+    App\Security\Token\AccessTokenHandler:
         factory: ['@App\Security\Factory\AccessTokenHandlerFactory', 'create']
     App\Security\PublicKeyProvider:
         factory: ['@App\Security\Factory\PublicKeyProviderFactory', 'create']
         arguments:
             - '%kernel.project_dir%'
-            - '@App\Security\TokenConfig'
+            - '@App\Security\Token\TokenConfig'
             - '%oauth.server_url%'
     Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler:
         arguments:

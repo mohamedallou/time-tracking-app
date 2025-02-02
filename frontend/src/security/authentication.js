@@ -9,6 +9,7 @@ export const keycloakAdapter = new Keycloak({
 
 export async function isAuthenticated() {
     try {
+        //check locally on server before oauth server
         return await keycloakAdapter.init(
             {
                 onLoad: 'login-required',

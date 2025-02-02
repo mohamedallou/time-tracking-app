@@ -18,8 +18,10 @@ use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+#[Route(path: '/api/admin', name: 'admin_')]
 class TimeLogController extends AbstractController
 {
     public function __construct(
@@ -30,7 +32,7 @@ class TimeLogController extends AbstractController
     }
 
     #[Route(
-        '/api/timelog',
+        '/timelog',
         name: 'timelog_create',
         requirements: [
             '_format' => 'json',
@@ -38,6 +40,7 @@ class TimeLogController extends AbstractController
         methods: ['POST'],
         format: 'json'
     )]
+    #[IsGranted('ROLE_CREATE_TIME_LOG')]
     public function create(
         #[MapRequestPayload(validationGroups: ['create'])] TimeLogStoreDto $timeLogStoreDto
     ): Response {
@@ -46,7 +49,7 @@ class TimeLogController extends AbstractController
     }
 
     #[Route(
-        '/api/timelog/{logId<\d+>}',
+        '/timelog/{logId<\d+>}',
         name: 'timelog_edit',
         requirements: [
             '_format' => 'json',
@@ -67,7 +70,7 @@ class TimeLogController extends AbstractController
     }
 
     #[Route(
-        '/api/timelog/{id<\d+>}',
+        '/timelog/{id<\d+>}',
         name: 'timelog_delete',
         methods: ['DELETE'],
         format: 'json'
@@ -75,17 +78,12 @@ class TimeLogController extends AbstractController
     public function delete(
         int $id
     ): Response {
-        try {
-            $this->logManager->deleteTimeLog($id);
-        } catch (TimeLogDomainException $exception) {
-            return $this->handleTimeLogException($exception);
-        }
-
+        $this->logManager->deleteTimeLog($id);
         return $this->json(['success' => true, 'status' => Response::HTTP_OK]);
     }
 
     #[Route(
-        '/api/timelog/{id<\d+>?}',
+        '/timelog/{id<\d+>?}',
         name: 'timelog_read',
         methods: ['GET'],
         format: 'json'
@@ -96,34 +94,29 @@ class TimeLogController extends AbstractController
         #[MapQueryParameter] int $page = 1,
         #[MapQueryParameter] int $pageSize = 100,
     ): Response {
-        try {
-            if ($id === null) {
-                $res = $this->logManager->findLogs($pageSize, $page, $timeQueryDto->getFromDate(), $timeQueryDto->getToDate());
-                $total = $this->logManager->findLogsCount($timeQueryDto->getFromDate(), $timeQueryDto->getToDate());
-                return $this->json(
-                    [
-                        'status' => Response::HTTP_OK,
-                        'success' => true,
-                        'data' => $res,
-                        'meta' => [
-                            'total' => $total,
-                            'page' => $page,
-                            'pageSize' => $pageSize
-                        ]
+        if ($id === null) {
+            $res = $this->logManager->findLogs($pageSize, $page, $timeQueryDto->getFromDate(), $timeQueryDto->getToDate());
+            $total = $this->logManager->findLogsCount($timeQueryDto->getFromDate(), $timeQueryDto->getToDate());
+            return $this->json(
+                [
+                    'status' => Response::HTTP_OK,
+                    'success' => true,
+                    'data' => $res,
+                    'meta' => [
+                        'total' => $total,
+                        'page' => $page,
+                        'pageSize' => $pageSize
                     ]
-                );
-            }
-            $timeLog = $this->logManager->findOneTimeLog($id);
-
-        } catch (TimeLogDomainException $exception) {
-            return $this->handleTimeLogException($exception);
+                ]
+            );
         }
+        $timeLog = $this->logManager->findOneTimeLog($id);
 
         return $this->json(['success' => true, 'status' => Response::HTTP_OK, 'data' => $timeLog]);
     }
 
     #[Route(
-        '/api/timelog/statistics',
+        '/timelog/statistics',
         name: 'timelog_statistics',
         methods: ['GET'],
         format: 'json'
@@ -133,19 +126,13 @@ class TimeLogController extends AbstractController
         #[MapQueryParameter] int $page = 1,
         #[MapQueryParameter] int $pageSize = 1000,
     ): Response {
-
-        try {
-            $res = $this->logManager->findLogStatistics(
-                $pageSize,
-                $page,
-                $timeQueryDto->getFromDate(),
-                $timeQueryDto->getToDate()
-            );
-            $total = $this->logManager->findLogsCount($timeQueryDto->getFromDate(), $timeQueryDto->getToDate());
-        } catch (TimeLogDomainException $exception) {
-            return $this->handleTimeLogException($exception);
-        }
-
+        $res = $this->logManager->findLogStatistics(
+            $pageSize,
+            $page,
+            $timeQueryDto->getFromDate(),
+            $timeQueryDto->getToDate()
+        );
+        $total = $this->logManager->findLogsCount($timeQueryDto->getFromDate(), $timeQueryDto->getToDate());
         return $this->json(
             [
                 'status' => Response::HTTP_OK,
@@ -161,7 +148,7 @@ class TimeLogController extends AbstractController
     }
 
     #[Route(
-        '/api/timelog/export/csv',
+        '/timelog/export/csv',
         name: 'timelog_export_csv',
         methods: ['GET'],
     )]
