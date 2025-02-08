@@ -10,12 +10,15 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\Ignore;
 
+#[Groups(['public', 'user_details'])]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    #[Groups('timelog_details')]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -46,7 +49,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     private ?string $plainPassword = null;
 
-    #[OneToMany(targetEntity: TimeLog::class, orphanRemoval: true, mappedBy: 'user')]
+    #[Groups(['user_details', 'public'])]
+    #[OneToMany(targetEntity: TimeLog::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $timeLogs;
 
     public function __construct()

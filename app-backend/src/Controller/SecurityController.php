@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
@@ -28,7 +29,7 @@ class SecurityController extends AbstractController
     #[Route('/api/userinfo', name: 'app_userinfo', methods: ['GET'])]
     public function userInfo(#[CurrentUser] ?User $user): Response
     {
-        return $this->json($this->serializer->normalize($user, 'json', ['groups' => 'public']));
+        return $this->json($this->serializer->normalize($user, 'json', ['groups' => 'user_details']));
     }
 
     //todo: add logout route

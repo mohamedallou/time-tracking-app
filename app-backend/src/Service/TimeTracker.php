@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Entity\TimeLog;
+use App\Entity\User;
 use App\Event\InvalidTimeLogFound;
 use App\Exception\TimeLogDomainException;
+use App\Exception\TimeLogTooLongException;
 use App\Repository\TimeLogRepository;
 use App\Service\Rule\IsWithinShiftDurationLimit;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 class TimeTracker
 {
@@ -23,9 +26,11 @@ class TimeTracker
     ) {
     }
 
-    public function startTimeTracking(): void
+    public function startTimeTracking(?User $user): void
     {
-        $lastTimeLog = $this->findCurrentActiveTimeLog();
+        $this->messageBus->dispatch(new InvalidTimeLogFound(26));
+
+        $lastTimeLog = $this->findCurrentActiveTimeLogForUser($user);
 
         if ($lastTimeLog !== null && $lastTimeLog->getEnd() === null && $lastTimeLog->isValid()) {
             throw new TimeLogDomainException(
@@ -37,13 +42,14 @@ class TimeTracker
 
         $timeLog = new TimeLog();
         $timeLog->setStart(new \DateTimeImmutable());
+        $timeLog->setUser($this->security->getUser());
         $this->entityManager->persist($timeLog);
         $this->entityManager->flush();
     }
 
-    public function stopTimeTracking(): void
+    public function stopTimeTracking(?User $user): void
     {
-        $lastTimeLog = $this->findCurrentActiveTimeLog();
+        $lastTimeLog = $this->findCurrentActiveTimeLogForUser($user);
         if ($lastTimeLog === null || $lastTimeLog->getEnd() !== null) {
             throw new TimeLogDomainException(
                 'active_tracking_not_found',
@@ -61,17 +67,21 @@ class TimeTracker
             $lastTimeLog->setValid(false);
             $this->messageBus->dispatch(new InvalidTimeLogFound($lastTimeLog->getId()));
             $lastTimeLog->setEnd(null);
+            throw new TimeLogTooLongException(
+                'The shift is too long',
+                'Shift Too Long'
+            );
         }
 
         $this->entityManager->persist($lastTimeLog);
         $this->entityManager->flush();
     }
 
-    public function findCurrentActiveTimeLog(): ?TimeLog
+    public function findCurrentActiveTimeLogForUser(#[CurrentUser] ?User $user): ?TimeLog
     {
         /** @var TimeLogRepository $repo */
         $repo = $this->entityManager->getRepository(TimeLog::class);
-        $lastTimeLog = $repo->findLastLogForUser($this->security->getUser());
+        $lastTimeLog = $repo->findLastLogForUser($user);
 
         if ($lastTimeLog === null || !$lastTimeLog->isValid() || $lastTimeLog->getEnd() !== null) {
             return null;

@@ -17,12 +17,16 @@ use Doctrine\ORM\Mapping\PrePersist;
 use Doctrine\ORM\Mapping\PreUpdate;
 use Doctrine\ORM\Mapping\Table;
 use Symfony\Component\Serializer\Attribute\Context;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\Ignore;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
+#[Groups('timelog_details')]
 #[Entity(repositoryClass: TimeLogRepository::class), Table('timelog')]
 #[HasLifecycleCallbacks]
 class TimeLog
 {
+    #[Groups(['timelog_details', 'user_details'])]
     #[Id, Column(name: 'id', type: 'integer'), GeneratedValue(strategy: 'IDENTITY')]
     private int $id;
 
@@ -34,10 +38,12 @@ class TimeLog
     #[Column(type: Types::DATETIME_IMMUTABLE)]
     private DateTimeImmutable $updated;
 
+    #[Groups(['timelog_details', 'user_details'])]
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i \G\M\T'])]
     #[Column(type: Types::DATETIME_IMMUTABLE)]
     private DateTimeImmutable $start;
 
+    #[Groups(['timelog_details', 'user_details'])]
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i \G\M\T'])]
     #[Column(name: '`end`', type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?DateTimeImmutable $end = null;

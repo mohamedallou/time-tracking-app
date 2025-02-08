@@ -97,7 +97,8 @@
         "migration-make": "php bin/console make:migration",
         "migrate": "php bin/console doctrine:migration:migrate",
         "debug-container": "php bin/console debug:container",
-        "debug-container-autowirable": " php bin/console debug:autowiring --all"
+        "debug-container-autowirable": " php bin/console debug:autowiring --all",
+        "debug-messenger": "php bin/console debug:messenger"
     },
     "conflict": {
         "symfony/symfony": "*"

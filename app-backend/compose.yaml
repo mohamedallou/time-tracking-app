@@ -1,6 +1,19 @@
 version: '3'
 name: 'sio-backend-time-tracking'
 services:
+  messenger_worker:
+    build:
+      context: .
+      dockerfile: messenger-worker.dockerfile
+    working_dir: /var/www
+    environment:
+      MESSAGE_QUEUE_URL: "postgresql://app:!ChangeMe!@database:5432/app?serverVersion=16&charset=utf8"
+      MAILER_DSN: "smtp://mailer:1025"
+      DATABASE_URL: "postgresql://app:!ChangeMe!@database:5432/app?serverVersion=16&charset=utf8"
+    volumes:
+      - ./:/var/www
+    restart: unless-stopped
+    command: php /var/www/bin/console messenger:consume async
   keycloak:
     image: quay.io/keycloak/keycloak:26.1.0
     environment:

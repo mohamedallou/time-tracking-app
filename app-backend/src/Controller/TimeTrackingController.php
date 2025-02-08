@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Exception\TimeLogLogicException;
+use App\Entity\User;
 use App\Service\TimeTracker;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+#[IsGranted('IS_AUTHENTICATED')]
 class TimeTrackingController extends AbstractController
 {
     public function __construct(
@@ -27,9 +30,9 @@ class TimeTrackingController extends AbstractController
         methods: ['POST'],
         format: 'json',
     )]
-    public function start(): Response
+    public function start(#[CurrentUser] ?User $user): Response
     {
-        $this->timeTracker->startTimeTracking();
+        $this->timeTracker->startTimeTracking($user);
         return $this->json(['success' => true],  Response::HTTP_CREATED);
     }
 
@@ -42,24 +45,29 @@ class TimeTrackingController extends AbstractController
         methods: ['POST'],
         format: 'json',
     )]
-    public function end(): Response
+    public function end(#[CurrentUser] ?User $user): Response
     {
-        $this->timeTracker->stopTimeTracking();
+        $this->timeTracker->stopTimeTracking($user);
         return $this->json(['success' => true],  Response::HTTP_CREATED);
     }
 
     #[Route(
-        '/api/timetracking/stop',
-        name: 'timetracking_stop',
+        '/api/timetracking/current',
+        name: 'timetracking_current',
         requirements: [
             '_format' => 'json',
         ],
-        methods: ['POST'],
+        methods: ['GET'],
         format: 'json',
+
     )]
-    public function current(): Response
+    public function current(#[CurrentUser]?User $user): Response
     {
-        $currentTimeLog = $this->timeTracker->findCurrentActiveTimeLog();
-        return $this->json(['success' => true, 'data' => $currentTimeLog],  Response::HTTP_CREATED);
+        $currentTimeLog = $this->timeTracker->findCurrentActiveTimeLogForUser($user);
+        return $this->json(
+            ['success' => true, 'data' => $currentTimeLog],
+            Response::HTTP_CREATED,
+            context: ['groups' => 'timelog_details']
+        );
     }
 }
